@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="client.MainPanelController" stylesheets="styles.css">
+    <HBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+        <TextField fx:id="filePath" editable="false" promptText="File path" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+        <Button fx:id="Up" minWidth="70" onAction="#upToDirectory" text="Up"/>
+    </HBox>
+    <TableView fx:id="tableInfo" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
+    <properties>
+        <ctrl>
+            <fx:reference source="controller"/>
+        </ctrl>
+    </properties>
+</VBox>

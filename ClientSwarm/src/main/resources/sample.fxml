@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.Controller" stylesheets="styles.css"
+      fx:id="SceneBackground">
+    <!-- меню на выход и перелогин-->
+    <HBox fx:id="Menu" alignment="BASELINE_LEFT" prefHeight="0.0" prefWidth="810.0" visible="true">
+        <ChoiceBox fx:id="menu" onAction="#goMenu" prefHeight="26.0" prefWidth="120.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Меню"/>
+                    <String fx:value="Сменить профиль"/>
+                    <String fx:value="Выйти"/>
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+    </HBox>
+    <!--    текстовое поле для сообщений-->
+    <TextArea fx:id="messageToUser" layoutX="322.0" layoutY="0" prefHeight="38.0" prefWidth="472.0"
+              text="Добро пожаловать. Авторизуйтесь или перейдите в форму регистрации." VBox.vgrow="NEVER">
+    </TextArea>
+    <!--поле авторизации-->
+    <AnchorPane fx:id="anchorPane" visible="true">
+        <VBox fx:id="authenticationBlock" alignment="TOP_CENTER" layoutX="500.0" layoutY="100" prefHeight="380"
+              spacing="15" visible="true">
+            <TextField fx:id="loginField" layoutY="50" prefHeight="30" prefWidth="230" promptText="Введите логин..."/>
+            <PasswordField fx:id="passwordField" prefHeight="30" prefWidth="230" promptText="Введите пароль..."/>
+            <Button fx:id="entryButton" layoutX="583" layoutY="190" onAction="#sendAuthMessage" prefWidth="130">Войти
+            </Button>
+            <Label id="registrationNotification" layoutX="450" layoutY="500" textAlignment="CENTER" VBox.vgrow="ALWAYS">
+                Создать новое хранилище?
+            </Label>
+        </VBox>
+
+        <!--поле регистрации-->
+        <Button fx:id="registrationButton" layoutX="550.0" layoutY="270.0" onAction="#showRegistrationForms"
+                prefWidth="130" visible="true">
+            Регистрация
+        </Button>
+        <Label fx:id="registrationCompleted" alignment="TOP_CENTER" layoutX="500.0" layoutY="220.0" opacity="0.7"
+               prefHeight="30.0" prefWidth="244.0" text="ВЫ ЗАРЕГИСТРИРОВАЛИСЬ" textAlignment="CENTER" visible="false">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+        <Button fx:id="cancelRegistrationButton" layoutX="550.0" layoutY="300.0" onAction="#cancelRegistration"
+                prefHeight="26.0" prefWidth="130.0" visible="false">Вернуться
+        </Button>
+        <VBox fx:id="registrationBlock" alignment="TOP_CENTER" layoutX="500.0" layoutY="100" prefHeight="218.0"
+              prefWidth="230.0" spacing="15" visible="false">
+            <TextField fx:id="registrationLoginForm" prefHeight="30" prefWidth="230" promptText="Введите логин..."/>
+            <PasswordField fx:id="registrationPassForm" prefHeight="30" prefWidth="230" promptText="Введите пароль..."/>
+            <PasswordField fx:id="repeatPassForm" prefHeight="30" prefWidth="230" promptText="Повторите пароль..."/>
+            <Button fx:id="finalRegistrationButton" layoutX="400.0" layoutY="300" onAction="#sendRegMessageToServer"
+                    prefHeight="26.0" prefWidth="170.0" visible="false">Зарегистрироваться
+            </Button>
+        </VBox>
+    </AnchorPane>
+    <HBox fx:id="PanelBlock" prefHeight="0.0" prefWidth="650.0" visible="false" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+        <children>
+            <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="390.0" HBox.hgrow="ALWAYS"
+                  VBox.vgrow="ALWAYS">
+                <Label alignment="TOP_CENTER" contentDisplay="CENTER" maxHeight="-Infinity" prefHeight="5.0"
+                       prefWidth="418.0" text="LOCAL" textAlignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                    <font>
+                        <Font name="System Bold" size="16.0"/>
+                    </font>
+                </Label>
+                <HBox>
+                    <fx:include fx:id="clientInfo" source="panel.fxml" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+            <!--поле кнопок-->
+            <VBox fx:id="btnPanelBlock" alignment="CENTER" layoutY="250.0" prefHeight="300.0" prefWidth="34.0"
+                  spacing="20" visible="false" HBox.hgrow="ALWAYS">
+                <Button focusTraversable="false" layoutY="150.0" maxWidth="Infinity" onAction="#moveFileToServer"
+                        prefHeight="0.0" prefWidth="25.0" text="---&gt;" textAlignment="CENTER" HBox.hgrow="ALWAYS"
+                        VBox.vgrow="ALWAYS"/>
+                <Button focusTraversable="false" maxWidth="Infinity" onAction="#moveFileToClient" text="&lt;---"
+                        HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+                <Button focusTraversable="false" maxWidth="Infinity" onAction="#createDirectory" text="Создать папку"
+                        HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+                <Button focusTraversable="false" maxWidth="Infinity" onAction="#delete" text="Удалить"
+                        HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+                <Button focusTraversable="false" maxWidth="Infinity" onAction="#copyFile" text="Копировать"
+                        HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS"/>
+                <padding>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                </padding>
+            </VBox>
+            <!-- основное поле облака сервера-->
+            <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
+                <Label alignment="TOP_CENTER" contentDisplay="CENTER" maxHeight="-Infinity" prefHeight="5.0"
+                       prefWidth="418.0" text="STORAGE" textAlignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                    <font>
+                        <Font name="System Bold" size="16.0"/>
+                    </font>
+                </Label>
+                <HBox>
+                    <fx:include fx:id="serverInfo" source="panel.fxml" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+        </children>
+    </HBox>
+</VBox>
