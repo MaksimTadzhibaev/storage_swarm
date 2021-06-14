@@ -1,5 +1,6 @@
 package client;
 
+import client.handlers.ClientMsgHandler;
 import client.interfaces.AnswerFromServer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

@@ -1,4 +1,4 @@
-package client;
+package client.handlers;
 
 import client.interfaces.AnswerFromServer;
 import io.netty.channel.ChannelHandlerContext;

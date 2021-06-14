@@ -90,8 +90,8 @@ public class Controller implements Initializable {
                     if (msg.startsWith(AUTH + OK)) {
                         serverDirectory = answer[1];
                         currentLogin = answer[2];
-                        clientPC.setFilePath(clientDirectory);
-                        serverPC.setFilePath(serverDirectory);
+                        clientPC.setNormalPath(clientDirectory);
+                        serverPC.setNormalPath(serverDirectory);
                         setTitle(currentLogin);
                         updatePanel();
                         cancelAll();
@@ -116,9 +116,9 @@ public class Controller implements Initializable {
                 } else if (args instanceof FileMove) {
                     try {
                         args = new FileMove(((FileMove) args).getName(), ((FileMove) args).getBytes(), ((FileMove) args).getPath());
-                        if (!Files.exists(Paths.get(clientPC.getFilePath(), ((FileMove) args).getName()))) {
-                            Files.createFile(Paths.get(clientPC.getFilePath(), ((FileMove) args).getName()));
-                            Files.write(Paths.get(clientPC.getFilePath(), ((FileMove) args).getName()), ((FileMove) args).getBytes());
+                        if (!Files.exists(Paths.get(clientPC.getNormalPath(), ((FileMove) args).getName()))) {
+                            Files.createFile(Paths.get(clientPC.getNormalPath(), ((FileMove) args).getName()));
+                            Files.write(Paths.get(clientPC.getNormalPath(), ((FileMove) args).getName()), ((FileMove) args).getBytes());
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -188,10 +188,10 @@ public class Controller implements Initializable {
     //метод обновляет директории после изменений и отправляет информацию о новой директории на сервер
     public void updatePanel() {
         Platform.runLater(() -> {
-            clientPC.updateList(Paths.get(clientPC.getFilePath()));
-            serverPC.updateList(Paths.get(serverPC.getFilePath()));
-            clientNetty.sendMessage(CD + serverPC.getFilePath());
-            System.out.println(serverPC.getFilePath());
+            clientPC.updateList(Paths.get(clientPC.getNormalPath()));
+            serverPC.updateList(Paths.get(serverPC.getNormalPath()));
+            clientNetty.sendMessage(CD + serverPC.getNormalPath());
+            System.out.println(serverPC.getNormalPath());
         });
     }
 
@@ -237,11 +237,11 @@ public class Controller implements Initializable {
         String nameDir = "Новая_папка" + ++numberOfNewDirectories;
 
         if (serverPC.tableInfo.isFocused()) {
-            target = serverPC.getFilePath();
+            target = serverPC.getNormalPath();
             clientNetty.sendMessage(MKDIR + nameDir);
         }
         if (clientPC.tableInfo.isFocused()) {
-            target = clientPC.getFilePath();
+            target = clientPC.getNormalPath();
             try {
                 Path newDir = Paths.get(target + "/" + nameDir);
                 if (!Files.exists(newDir))
@@ -259,10 +259,10 @@ public class Controller implements Initializable {
 
     //метод отправляет файл на облако
     public void moveFileToServer(ActionEvent actionEvent) {
-        if (!Files.isDirectory(Paths.get(clientPC.getFilePath(), clientPC.getFileName()).toAbsolutePath())) {
+        if (!Files.isDirectory(Paths.get(clientPC.getNormalPath(), clientPC.getFileName()).toAbsolutePath())) {
             try {
-                byte[] byteBuf = Files.readAllBytes(Paths.get(clientPC.getFilePath(), clientPC.getFileName()).toAbsolutePath());
-                fileMove = new FileMove(clientPC.getFileName(), byteBuf, serverPC.getFilePath());
+                byte[] byteBuf = Files.readAllBytes(Paths.get(clientPC.getNormalPath(), clientPC.getFileName()).toAbsolutePath());
+                fileMove = new FileMove(clientPC.getFileName(), byteBuf, serverPC.getNormalPath());
                 clientNetty.sendMessage(fileMove);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -274,8 +274,8 @@ public class Controller implements Initializable {
 
     //метод отправляет сообщение на сервер о загрузке файла на клиент
     public void moveFileToClient(ActionEvent actionEvent) {
-        if (!Files.isDirectory(Paths.get(serverPC.getFilePath(), serverPC.getFileName()))) {
-            clientNetty.sendMessage(DOWNLOAD + serverPC.getFilePath() + " " + serverPC.getFileName());
+        if (!Files.isDirectory(Paths.get(serverPC.getNormalPath(), serverPC.getFileName()))) {
+            clientNetty.sendMessage(DOWNLOAD + serverPC.getNormalPath() + " " + serverPC.getFileName());
         } else {
             messageToUser.setText("Выберите файл для отправки");
         }
@@ -294,7 +294,7 @@ public class Controller implements Initializable {
 
         if (clientPC.getFileName() != null) {
             source = clientPC;
-            Path sourcePath = Paths.get(source.getFilePath(), source.getFileName());
+            Path sourcePath = Paths.get(source.getNormalPath(), source.getFileName());
             methodForDelete(sourcePath);
             updatePanel();
         }
@@ -340,8 +340,8 @@ public class Controller implements Initializable {
             clientNetty.sendMessage(COPY + serverPC.getFileName());
         }
         if (clientPC.getFileName() != null) {
-            Path sourcePath = Paths.get(clientPC.getFilePath(), clientPC.getFileName());
-            Path destPath = Paths.get(clientPC.getFilePath(), clientPC.getFileName() + "-копия");
+            Path sourcePath = Paths.get(clientPC.getNormalPath(), clientPC.getFileName());
+            Path destPath = Paths.get(clientPC.getNormalPath(), clientPC.getFileName() + "-копия");
 
             try {
                 methodForCopy(sourcePath, destPath);
@@ -378,6 +378,4 @@ public class Controller implements Initializable {
             }
         });
     }
-
-
 }
