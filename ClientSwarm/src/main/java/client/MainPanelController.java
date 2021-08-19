@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -19,13 +20,16 @@ import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import static common.command.Command.*;
 
 public class MainPanelController implements Initializable {
 
+    Controller controller = new Controller();
+    public String normalPath; //полный путь до файлов
+    @FXML
+    public TextField filePath; //отображает файлы начиная с папки хранилища (выше не подняться)
     @FXML
     Button Up;
-    @FXML
-    public TextField filePath;
     @FXML
     public TableView<FileInfo> tableInfo;
 
@@ -79,7 +83,7 @@ public class MainPanelController implements Initializable {
                 @Override
                 public void handle(MouseEvent event) {
                     if (event.getClickCount() == 2) {
-                        Path path = Paths.get(filePath.getText())
+                        Path path = Paths.get(normalPath)
                                 .resolve(tableInfo.getSelectionModel()
                                         .getSelectedItem()
                                         .getFilename());
@@ -94,7 +98,15 @@ public class MainPanelController implements Initializable {
     //обновление листов с файлами при выполнении действий над ними
     public void updateList(Path path) {
         try {
-            filePath.setText(path.normalize().toAbsolutePath().toString());
+            Path maxPath = path.toAbsolutePath();
+            if (String.valueOf(path).contains("ClientSwarm" + File.separator + "FilesClient")) {
+                Path minPath = Paths.get(LOCALSTOR).toAbsolutePath();
+                filePath.setText(String.valueOf(minPath.relativize(maxPath)));
+            } else {
+                Path minPath = Paths.get(CLOUD).toAbsolutePath();
+                filePath.setText(String.valueOf(minPath.relativize(maxPath)));
+            }
+            setNormalPath(path.normalize().toAbsolutePath().toString());
             tableInfo.getItems().clear();
             tableInfo.getItems()
                     .addAll(Files.list(path)
@@ -106,13 +118,12 @@ public class MainPanelController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Error. Cannot update list of files", ButtonType.OK);
             alert.showAndWait();
         }
-
     }
 
     //возврат вверх по директории до папок сервера и клиента
     public void upToDirectory(ActionEvent actionEvent) {
-        Path up = Paths.get(filePath.getText()).getParent();
-        if (filePath.getText().endsWith("swarm") || filePath.getText().endsWith("local")) {
+        Path up = Paths.get(getNormalPath()).getParent();
+        if (normalPath.endsWith("swarm") || normalPath.endsWith("local")) {
             return;
         } else {
             updateList(up);
@@ -127,7 +138,7 @@ public class MainPanelController implements Initializable {
         return tableInfo.getSelectionModel().getSelectedItem().getFilename();
     }
 
-    //получить выбранного файла
+    //получить путь выбранного файла
     public String getFilePath() {
         return filePath.getText();
     }
@@ -135,6 +146,21 @@ public class MainPanelController implements Initializable {
     //изменить путь выбранного файла
     public void setFilePath(String filePath) {
         this.filePath.setText(filePath);
+    }
+
+    //полный путь изменить
+    public void setNormalPath(String normalPath) {
+        this.normalPath = normalPath;
+    }
+
+    //полный путь получить
+    public String getNormalPath() {
+        return normalPath;
+    }
+
+    //полный путь изменить
+    public void setLogin(String normalPath) {
+        this.normalPath = normalPath;
     }
 }
 
